@@ -1,5 +1,12 @@
 # Collapse All Plugin
 
+## Install
+
+- `npm run build`
+- copy `main.js` and `manifest.json`
+
+## Overview
+
 Extends Obsidian's collapse / expand all functions with bindable commands.
 
 ## Usage
