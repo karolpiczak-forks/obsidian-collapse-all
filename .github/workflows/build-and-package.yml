@@ -1,0 +1,77 @@
+name: Build and package plugin
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build plugin
+        run: npm run build
+
+      - name: Prepare dist folder
+        run: |
+          rm -rf dist
+          mkdir -p dist
+          cp manifest.json dist/
+          cp main.js dist/
+          if [ -f styles.css ]; then
+            cp styles.css dist/
+          fi
+          if [ -f versions.json ]; then
+            cp versions.json dist/
+          fi
+
+      - name: Create calver package
+        id: package
+        run: |
+          CALVER=$(date -u +"%Y.%m.%d.%H%M")
+          echo "calver=$CALVER" >> "$GITHUB_OUTPUT"
+          ZIP_NAME="obsidian-collapse-all-$CALVER.zip"
+          mkdir -p package
+          (cd dist && zip -r "../package/$ZIP_NAME" .)
+          echo "zip_name=$ZIP_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Upload dist directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+
+      - name: Upload calver package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package.outputs.zip_name }}
+          path: package/${{ steps.package.outputs.zip_name }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Publish CalVer release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.package.outputs.calver }}
+          name: Obsidian Collapse All ${{ steps.package.outputs.calver }}
+          files: package/${{ steps.package.outputs.zip_name }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
