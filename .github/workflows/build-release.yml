@@ -1,0 +1,13 @@
+name: Build & Release
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  release:
+    uses: karolpiczak-forks/obsidian-plugins/.github/workflows/build-release.yml@main
+    with:
+      dist_files: |
+        manifest.json
+        main.js
