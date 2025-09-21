@@ -1,4 +1,4 @@
-name: Build & Release
+name: Package plugin on source changes
 on:
   push:
     branches: [main]
