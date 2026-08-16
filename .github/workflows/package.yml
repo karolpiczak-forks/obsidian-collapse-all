@@ -1,12 +1,12 @@
 name: Package plugin on source changes
 on:
   push:
-    branches: [main]
+    branches: [audited]
   workflow_dispatch:
 
 jobs:
   package:
-    uses: karolpiczak-forks/obsidian-plugins/.github/workflows/build-release.yml@main
+    uses: karolpiczak-forks/obsidian-plugins/.github/workflows/build-release.yml@audited
     permissions:
       contents: write
     with:
