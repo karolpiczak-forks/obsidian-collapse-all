@@ -13,9 +13,6 @@
     "url": "https://nathan-smith.org/"
   },
   "license": "MIT",
-  "overrides": {
-    "moment": "2.29.4"
-  },
   "devDependencies": {
     "@types/node": "^16.11.6",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
